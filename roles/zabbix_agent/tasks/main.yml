@@ -1,0 +1,77 @@
+---
+- name: Disable Zabbix packages provided by EPEL
+  lineinfile:
+    insertafter: '\[epel\]'
+    line: excludepkgs=zabbix*
+    path: /etc/yum.repos.d/epel.repo
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == "9" 
+
+- name: (Ubuntu) Download repository install package
+  get_url:
+    url: "{{ zabbix_repo_package_url_ubuntu }}"
+    dest: /tmp
+  register: source_file_ubuntu
+  when: ansible_os_family == 'Debian'
+
+- name: (Ubuntu) Install Zabbix repository package
+  apt:
+    deb: "{{ source_file_ubuntu.dest }}"
+  when: ansible_os_family == 'Debian'
+
+- name: (CentOS 7) Download repository install package
+  get_url:
+    url: "{{ zabbix_repo_package_url_centos7 }}"
+    dest: /tmp
+  register: source_file_centos7
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == "7"  
+
+- name: (CentOS 7) Install Zabbix repository package
+  yum:
+   name: "{{ source_file_centos7.dest }}"
+   state: present
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == "7"  
+
+- name: (CentOS 8) Download repository install package
+  get_url:
+    url: "{{ zabbix_repo_package_url_centos9 }}"
+    dest: /tmp
+  register: source_file_centos9
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == "9"  
+
+- name: (CentOS 8) Install Zabbix repository package
+  dnf:
+   name: "{{ source_file_centos9.dest }}"
+   state: present
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == "9"
+
+- name: Update apt repo list
+  shell: apt update
+  when: ansible_os_family == 'Debian'
+
+- name: (Ubuntu) Install Zabbix Agent 2
+  apt:
+    name:
+    - zabbix-agent2
+    - zabbix-agent2-plugin-*
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: (RedHat) Install Zabbix Agent 2
+  yum:
+    name:
+    - zabbix-agent2
+    - zabbix-agent2-plugin-*
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: Restart and enable Zabbix Agent
+  service:
+    name: zabbix-agent2
+    state: restarted
+    enabled: true
+
+- name: Add Zabbix server address to agent configuration file
+  lineinfile:
+    line: Server={{ zabbix_server_ip }}
+    path: /etc/zabbix/zabbix_agent2.conf
+    regexp: '^#?Server='

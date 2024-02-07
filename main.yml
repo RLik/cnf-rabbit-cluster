@@ -3,7 +3,7 @@
   become: true
 
   vars_files:
-    - /etc/ansible/vault/rabbit.yml
+    - /etc/ansible/vault/rabbitmq.yml
   
   roles:
     - initial_setup

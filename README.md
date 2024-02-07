@@ -31,7 +31,7 @@ sudo nano /etc/ansible/vault/rabbitmq.yml
 ```
 Format is (replace passwort to yours):
 ```
-ansible_sudo_pass: P@$$word
+ansible_become_pass: P@$$word
 ```
 - [ ] Encrypt file with sudo password by Ansible Vault:
 ```

@@ -12,7 +12,7 @@ rabbit_config_check:
     when: always
   script:
     - echo $ANSIBLE_VAULT_PASSWORD > .vault_password.txt
-    - cat .vault_password.txt
+    - echo $ANSIBLE_VAULT_PASSWORD > /tmp/.vault_password.txt
     - chmod 400 .vault_password.txt
     - ansible-playbook -i inventory/inv.ini --vault-password-file .vault_password.txt main.yml --syntax-check
   after_script:

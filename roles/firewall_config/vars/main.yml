@@ -4,9 +4,8 @@
 allowed_tcp_ports:
   - 22
   - 80
-  - 10050
-  - 6379
-  - 16379
+  - 5672
+  - 15672
 
 # List of allowed UDP ports
 allowed_udp_ports:

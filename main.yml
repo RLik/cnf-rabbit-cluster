@@ -3,14 +3,13 @@
   become: true
 
   vars_files:
-    - /etc/ansible/vault/redis.yml
+    - /etc/ansible/vault/rabbit.yml
   
   roles:
     - initial_setup
     - firewall_config
     - security_config
     - zabbix_agent
-    - redis_cluster
 
   pre_tasks:
   - name: Update apt cache if needed.

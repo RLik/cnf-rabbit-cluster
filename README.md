@@ -44,4 +44,4 @@ sudo chmod 640 /etc/ansible/vault/rabbitmq.yml
 sudo chmod 650 /etc/ansible/vault/
 ```
 
-- [ ] In GitLab Project settings add variale named $ANSIBLE_VAULT_PASSWORD and in value part specify password that you've use to encrypt galera.yml file by Ansible Vault.
+- [ ] In GitLab Project settings add variale named $ANSIBLE_VAULT_PASSWORD and in value part specify password that you've use to encrypt rabbitmq.yml file by Ansible Vault.

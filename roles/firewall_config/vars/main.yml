@@ -1,11 +1,18 @@
 ---
 # List of allowed TCP ports
-# Galera Cluster firewall rules - https://galeracluster.com/library/documentation/firewall-settings.html
+# RabbitMQ Cluster firewall rules - https://groups.google.com/g/rabbitmq-users/c/5emzXok_oDM
 allowed_tcp_ports:
   - 22
   - 80
+  - 5671
   - 5672
   - 15672
+  - 4369
+  - 25672
+  - 61613
+  - 1883
+  - 15674
+  - 15675
 
 # List of allowed UDP ports
 allowed_udp_ports:

@@ -1,0 +1,42 @@
+---
+- name: Configure name resolution
+  lineinfile:
+    path: "/etc/hosts"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} - {{ item }}"
+  with_items: "{{ groups['rabbit'] }}"
+
+- name: Install RabbitMQ server
+  package:
+    name: rabbitmq-server
+
+- name: Enable RabbitMQ service
+  service:
+    name: rabbitmq-server
+    state: started
+    enabled: true
+
+- name: Get cookie content of first node
+  shell: cat /var/lib/rabbitmq/.erlang.cookie
+  register: firts_node_cookie
+  when: inventory_hostname in groups["rabbit_primary"]
+
+- name: Define cookie variable for all hosts
+  set_fact:
+    rabbitmq_cookie: "{{ hostvars[item].firts_node_cookie }}"
+  with_items: "{{ groups['rabbit_primary'] }}"
+
+- name: Set cookie on additional nodes
+  copy:
+    content: "{{ rabbitmq_cookie.stdout_lines[0] }}"
+    dest: "/var/lib/rabbitmq/.erlang.cookie"
+  when: inventory_hostname in groups["rabbit_additional"]
+
+- name: Restart RabbitMQ server on additional nodes
+  service:
+    name: rabbitmq-server
+    state: restarted
+  when: inventory_hostname in groups["rabbit_additional"]
+
+- name: Join node to RabbitMQ cluster
+  shell: rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@lx01 && rabbitmqctl start_app
+  when: inventory_hostname in groups["rabbit_additional"]

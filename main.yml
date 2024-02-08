@@ -10,6 +10,7 @@
     - firewall_config
     - security_config
     - zabbix_agent
+    - rabbitmq-cluster
 
   pre_tasks:
   - name: Update apt cache if needed.

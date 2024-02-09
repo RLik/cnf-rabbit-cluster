@@ -35,8 +35,17 @@
   service:
     name: rabbitmq-server
     state: restarted
+  serial: 1
   when: inventory_hostname in groups["rabbit_additional"]
 
 - name: Join node to RabbitMQ cluster
   shell: rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@lx01 && rabbitmqctl start_app
   when: inventory_hostname in groups["rabbit_additional"]
+
+- name: Install RabbitMQ management plugin
+  shell: rabbitmq-plugins enable rabbitmq_management
+  run_once: true
+
+- name: Create test queuq
+  shell: rabbitmqadmin -u guest -p guest -V / declare queue name=test.queue
+  run_once: true
